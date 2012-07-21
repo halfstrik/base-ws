@@ -53,8 +53,7 @@ public class BaseService<T> {
         EntityManager em = emf.createEntityManager();
         log.debug("EntityManager: {} class {}", em, type);
         try {
-            return QueryBuilder.getInstance(type).buildQuery(em, uriInfo.getQueryParameters())
-                    .getResultList();
+            return QueryBuilder.getInstance(type).buildQuery(em, uriInfo.getQueryParameters()).getResultList();
         } finally {
 
             if (em.getTransaction().isActive())
@@ -157,7 +156,6 @@ public class BaseService<T> {
         }
     }
 
-    // TODO: implement
     public Integer getAggregatedResult(ServletContext context, String property, String aggregate) {
         EntityManagerFactory emf = (EntityManagerFactory) context.getAttribute("emf");
         EntityManager em = emf.createEntityManager();
