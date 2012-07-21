@@ -6,7 +6,7 @@
 
     <groupId>org.eu</groupId>
     <artifactId>base-ws</artifactId>
-    <version>1.2.5-SNAPSHOT</version>
+    <version>1.2.6-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -51,6 +51,7 @@
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.jersey</groupId>
@@ -64,5 +65,9 @@
             <url>http://workflow-dev:8080/nexus/content/repositories/bmstu-repo</url>
             <name>BMSTU Respository</name>
         </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <url>http://betxbet-dev:8081/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
     </distributionManagement>
 </project>
