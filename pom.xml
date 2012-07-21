@@ -60,14 +60,10 @@
         </dependency>
     </dependencies>
     <distributionManagement>
-        <repository>
-            <id>bmstu-repo</id>
-            <url>http://workflow-dev:8080/nexus/content/repositories/bmstu-repo</url>
-            <name>BMSTU Respository</name>
-        </repository>
         <snapshotRepository>
-            <id>snapshots</id>
-            <url>http://betxbet-dev:8081/nexus/content/repositories/snapshots</url>
+            <id>${repo-id}</id>
+            <name>${repo-name}</name>
+            <url>${repo-url}</url>
         </snapshotRepository>
     </distributionManagement>
 </project>
