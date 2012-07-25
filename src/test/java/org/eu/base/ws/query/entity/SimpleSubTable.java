@@ -6,12 +6,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlAttribute;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Strikki
- * Date: 2/6/12
- * Time: 12:45 PM
- */
 @Entity
 public class SimpleSubTable {
     @Id

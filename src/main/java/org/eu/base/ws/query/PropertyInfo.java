@@ -1,11 +1,5 @@
 package org.eu.base.ws.query;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Strikki
- * Date: 4/16/12
- * Time: 2:15 AM
- */
 public class PropertyInfo {
     String name;
     Class<?> type;
@@ -42,10 +36,7 @@ public class PropertyInfo {
 
         PropertyInfo propertyInfo = (PropertyInfo) o;
 
-        if (!name.equals(propertyInfo.name)) return false;
-        if (!type.equals(propertyInfo.type)) return false;
-
-        return true;
+        return name.equals(propertyInfo.name) && type.equals(propertyInfo.type);
     }
 
     @Override

@@ -1,11 +1,5 @@
 package org.eu.base.ws.query;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Strikki
- * Date: 3/16/12
- * Time: 11:43 PM
- */
 public class ParameterInfo {
     public enum Operation {EQ, NEQ, GT, LT, GE, LE, LIKE}
 
@@ -67,9 +61,7 @@ public class ParameterInfo {
 
         if (!name.equals(parameterInfo.name)) return false;
         if (operation != parameterInfo.operation) return false;
-        if (value != null ? !value.equals(parameterInfo.value) : parameterInfo.value != null) return false;
-
-        return true;
+        return !(value != null ? !value.equals(parameterInfo.value) : parameterInfo.value != null);
     }
 
     @Override

@@ -4,12 +4,6 @@ import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Strikki
- * Date: 4/1/12
- * Time: 2:19 AM
- */
 public class ParameterInfoTest {
     @Test
     public void creation() {

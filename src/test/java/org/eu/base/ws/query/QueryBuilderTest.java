@@ -21,12 +21,6 @@ import java.util.*;
 
 import static junit.framework.Assert.assertEquals;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Strikki
- * Date: 3/31/12
- * Time: 2:58 PM
- */
 public class QueryBuilderTest {
     EntityManagerFactory emf;
     Connection connection;

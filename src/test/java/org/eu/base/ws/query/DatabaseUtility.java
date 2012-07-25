@@ -5,12 +5,6 @@ import java.sql.DriverManager;
 
 import static org.junit.Assert.fail;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Strikki
- * Date: 6/14/12
- * Time: 5:47 PM
- */
 public class DatabaseUtility {
     public static Connection startup() {
         try {

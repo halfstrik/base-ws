@@ -1,11 +1,5 @@
 package org.eu.base.ws.query;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Strikki
- * Date: 4/23/12
- * Time: 1:52 AM
- */
 public class ExpressionInfo {
     public enum Operation {MAX, MIN, AVG}
 
@@ -60,9 +54,7 @@ public class ExpressionInfo {
         ExpressionInfo that = (ExpressionInfo) o;
 
         if (!name.equals(that.name)) return false;
-        if (operation != that.operation) return false;
-
-        return true;
+        return operation == that.operation;
     }
 
     @Override

@@ -19,9 +19,6 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.*;
 
-/**
- * @author anton
- */
 public class QueryBuilder<T> {
     private static final Logger log = LoggerFactory.getLogger(QueryBuilder.class);
     private static Map<Class<?>, Object> instances = new HashMap<Class<?>, Object>();

@@ -20,12 +20,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Strikki
- * Date: 2/6/12
- * Time: 11:11 PM
- */
 public class ProbeJPAFunctionality {
     EntityManagerFactory emf;
     Connection connection;

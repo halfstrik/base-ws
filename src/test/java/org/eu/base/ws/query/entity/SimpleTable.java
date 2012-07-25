@@ -4,12 +4,6 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Strikki
- * Date: 2/6/12
- * Time: 12:45 PM
- */
 @Entity
 public class SimpleTable {
     @Id

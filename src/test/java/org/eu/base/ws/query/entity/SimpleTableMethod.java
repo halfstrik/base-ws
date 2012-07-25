@@ -7,12 +7,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Strikki
- * Date: 6/20/12
- * Time: 11:05 AM
- */
 @Entity
 public class SimpleTableMethod {
     Integer identifier;

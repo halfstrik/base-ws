@@ -14,9 +14,6 @@ import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.List;
 
-/**
- * @author jump
- */
 public class BaseService<T> {
     private static final Logger log = LoggerFactory.getLogger(BaseService.class);
     private final Class<T> type;
