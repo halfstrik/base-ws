@@ -247,14 +247,14 @@ public class QueryBuilder<T> {
 
     public TypedQuery<T> buildQuery(EntityManager entityManager, MultivaluedMap<String, String> paramsStr) throws ParseException {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery criteriaQuery = cb.createQuery(type);
+        CriteriaQuery<T> criteriaQuery = cb.createQuery(type);
         Root<T> root = criteriaQuery.from(type);
 
-        List<ExpressionInfo> eiList = getExpressionInfoList(paramsStr);
-        if (eiList.size() > 0) {
-            Expression<? extends Number> e = getExpression(cb, root, eiList.get(0));
-            criteriaQuery.select(e);
-        }
+//        List<ExpressionInfo> eiList = getExpressionInfoList(paramsStr);
+//        if (eiList.size() > 0) {
+//            Expression<? extends Number> e = getExpression(cb, root, eiList.get(0));
+//            criteriaQuery.select(e);
+//        }
 
         List<ParameterInfo> params = getParameterList(paramsStr);
         Map<String, List<Predicate>> map = getPredicateByNameMap(cb, root, params);

@@ -3,7 +3,6 @@ package org.eu.base.ws;
 import org.eu.base.ws.query.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -19,18 +18,32 @@ import java.util.List;
  * @author jump
  */
 public class BaseService<T> {
-
     private static final Logger log = LoggerFactory.getLogger(BaseService.class);
     private final Class<T> type;
 
-    public BaseService(Class<T> type) {
+    private BaseService(Class<T> type) {
         this.type = type;
     }
 
-    private Object getIdentity(Object obj) {
+    public static <T> BaseService<T> newInstance(Class<T> type) {
+        boolean hasIdentity = false;
+        for (Field f : type.getDeclaredFields()) {
+            if (f.getAnnotation(Id.class) != null)
+                hasIdentity = true;
+        }
+        for (Method m : type.getMethods()) {
+            if (m.getAnnotation(Id.class) != null)
+                hasIdentity = true;
+        }
+        if (!hasIdentity) {
+            throw new IllegalArgumentException("Type '" + type.getCanonicalName() + "' has no identity");
+        }
+        return new BaseService<T>(type);
+    }
+
+    private Object getIdentity(T obj) {
         try {
             for (Field f : obj.getClass().getDeclaredFields()) {
-                f.setAccessible(true);
                 if (f.getAnnotation(Id.class) != null)
                     return f.get(obj);
             }
@@ -38,13 +51,12 @@ public class BaseService<T> {
                 if (m.getAnnotation(Id.class) != null)
                     return m.invoke(obj, (Object[]) null);
             }
-            log.error("Failed to get identity from {}", obj.getClass());
-            return null;
+            throw new AssertionError("Object must have identity, check creation process");
         } catch (Exception ex) {
             ex.printStackTrace();
             log.error("Failed to get identity from {} due to {}",
                     obj.getClass(), ex);
-            return null;
+            throw new AssertionError("Can't get identity value, something is going wrong");
         }
     }
 
@@ -94,7 +106,7 @@ public class BaseService<T> {
             for (T s : list) {
                 Object id = getIdentity(s);
                 if (id != null) {
-                    s = (T) em.find(s.getClass(), id);
+                    s = em.find(type, id);
                     if (s != null) em.remove(s);
                 }
             }
@@ -118,7 +130,7 @@ public class BaseService<T> {
         }
     }
 
-    public void update(ServletContext context, Object obj) {
+    public void update(ServletContext context, T obj) {
         EntityManagerFactory emf = (EntityManagerFactory) context.getAttribute("emf");
         EntityManager em = emf.createEntityManager();
         try {
@@ -138,15 +150,15 @@ public class BaseService<T> {
         }
     }
 
-    public void remove(ServletContext context, Object obj) {
+    public void remove(ServletContext context, T obj) {
         EntityManagerFactory emf = (EntityManagerFactory) context.getAttribute("emf");
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
             Object id = getIdentity(obj);
             if (id != null) {
-                if (em.find(obj.getClass(), id) != null)
-                    em.remove(obj);
+                obj = em.find(type, id);
+                if (obj != null) em.remove(obj);
             }
             em.getTransaction().commit();
         } finally {
@@ -156,16 +168,16 @@ public class BaseService<T> {
         }
     }
 
-    public Integer getAggregatedResult(ServletContext context, String property, String aggregate) {
-        EntityManagerFactory emf = (EntityManagerFactory) context.getAttribute("emf");
-        EntityManager em = emf.createEntityManager();
-        log.debug("EntityManager: {} class {}", em, type);
-        try {
-            throw new NotImplementedException();
-        } finally {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
-            em.close();
-        }
-    }
+//    public Integer getAggregatedResult(ServletContext context, String property, String aggregate) {
+//        EntityManagerFactory emf = (EntityManagerFactory) context.getAttribute("emf");
+//        EntityManager em = emf.createEntityManager();
+//        log.debug("EntityManager: {} class {}", em, type);
+//        try {
+//            throw new NotImplementedException();
+//        } finally {
+//            if (em.getTransaction().isActive())
+//                em.getTransaction().rollback();
+//            em.close();
+//        }
+//    }
 }

@@ -170,27 +170,27 @@ public class QueryBuilderTest {
         assertEquals(expected, actual);
     }
 
-    @Test
-    public void aggregationTest() throws ParseException {
-        EntityManager em = emf.createEntityManager();
-        MultivaluedMap<String, String> inputQueryParams = new MultivaluedMapImpl();
-        inputQueryParams.put("integer~MAX", new ArrayList<String>());
-        Object actual = QueryBuilder.getInstance(SimpleTable.class).buildQuery(em, inputQueryParams).getSingleResult();
-
-
-        em = emf.createEntityManager();
-        TypedQuery<Integer> query = em.createQuery("select max(s.integer) from SimpleTable s", Integer.class);
-        Integer expected = query.getSingleResult();
-
-        assertEquals(expected.doubleValue(), actual);
-
-        TypedQuery<Double> queryDouble = em.createQuery("select max(s.decimal) from SimpleTable s", Double.class);
-        Double expectedDouble = queryDouble.getSingleResult();
-
-        inputQueryParams.clear();
-        inputQueryParams.put("decimal~MAX", new ArrayList<String>());
-        Object actualDouble = QueryBuilder.getInstance(SimpleTable.class).buildQuery(em, inputQueryParams).getSingleResult();
-
-        assertEquals(expectedDouble, actualDouble);
-    }
+//    @Test
+//    public void aggregationTest() throws ParseException {
+//        EntityManager em = emf.createEntityManager();
+//        MultivaluedMap<String, String> inputQueryParams = new MultivaluedMapImpl();
+//        inputQueryParams.put("integer~MAX", new ArrayList<String>());
+//        Object actual = QueryBuilder.getInstance(SimpleTable.class).buildQuery(em, inputQueryParams).getSingleResult();
+//
+//
+//        em = emf.createEntityManager();
+//        TypedQuery<Integer> query = em.createQuery("select max(s.integer) from SimpleTable s", Integer.class);
+//        Integer expected = query.getSingleResult();
+//
+//        assertEquals(expected.doubleValue(), actual);
+//
+//        TypedQuery<Double> queryDouble = em.createQuery("select max(s.decimal) from SimpleTable s", Double.class);
+//        Double expectedDouble = queryDouble.getSingleResult();
+//
+//        inputQueryParams.clear();
+//        inputQueryParams.put("decimal~MAX", new ArrayList<String>());
+//        Object actualDouble = QueryBuilder.getInstance(SimpleTable.class).buildQuery(em, inputQueryParams).getSingleResult();
+//
+//        assertEquals(expectedDouble, actualDouble);
+//    }
 }
