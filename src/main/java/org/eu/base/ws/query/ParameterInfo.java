@@ -3,6 +3,8 @@ package org.eu.base.ws.query;
 public class ParameterInfo {
     public enum Operation {EQ, NEQ, GT, LT, GE, LE, LIKE}
 
+    final static private Integer PARAMETER_NAME_NUMBER = 0;
+    final static private Integer PARAMETER_OPERATION_NUMBER = 1;
     private String name;
     private Operation operation;
     private String value;
@@ -14,7 +16,7 @@ public class ParameterInfo {
     }
 
     public static boolean isParameter(String nameAndOperation) {
-        String operation = nameAndOperation.split("~")[1];
+        String operation = nameAndOperation.split("~")[PARAMETER_OPERATION_NUMBER];
         return operation.equals("EQ") || operation.equals("NEQ") || operation.equals("GT") || operation.equals("LT") ||
                 operation.equals("GE") || operation.equals("LE") || operation.equals("LIKE");
     }
@@ -28,8 +30,8 @@ public class ParameterInfo {
      * @return ParameterInfo instance
      */
     public static ParameterInfo valueOf(String nameAndOperation, String value) {
-        String name = nameAndOperation.split("~")[0];
-        Operation operation = Operation.valueOf(nameAndOperation.split("~")[1]);
+        String name = nameAndOperation.split("~")[PARAMETER_NAME_NUMBER];
+        Operation operation = Operation.valueOf(nameAndOperation.split("~")[PARAMETER_OPERATION_NUMBER]);
         return new ParameterInfo(name, operation, value);
     }
 

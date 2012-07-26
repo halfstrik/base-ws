@@ -86,7 +86,6 @@ public class QueryBuilder<T> {
                 }
             }
         }
-        log.info("hi there");
         log.info("jaxb annotated methods & fields list {} for {}", jaxbFieldsByAliases, type);
     }
 
@@ -233,6 +232,7 @@ public class QueryBuilder<T> {
                 throw new AssertionError("Attention! No one operation matches!");
         }
     }
+
 // Now we support only one aggregation expression per query - if need more - do like in this example:
 //    protected List<Expression> getExpressionList(CriteriaBuilder cb, Root<T> root, List<ExpressionInfo> expressions) {
 //        List<Expression> list = new ArrayList<Expression>();

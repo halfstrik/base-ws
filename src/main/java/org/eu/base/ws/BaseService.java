@@ -57,10 +57,9 @@ public class BaseService<T> {
         }
     }
 
-    public List<T> list(ServletContext context, UriInfo uriInfo) throws ParseException {
+    public List<T> getList(ServletContext context, UriInfo uriInfo) throws ParseException {
         EntityManagerFactory emf = (EntityManagerFactory) context.getAttribute("emf");
         EntityManager em = emf.createEntityManager();
-        log.debug("EntityManager: {} class {}", em, type);
         try {
             return QueryBuilder.getInstance(type).buildQuery(em, uriInfo.getQueryParameters()).getResultList();
         } finally {
