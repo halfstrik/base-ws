@@ -1,16 +1,16 @@
 package org.eu.base.ws.query;
 
-public class PropertyInfo {
+class DatabaseField {
     String name;
     Class<?> type;
 
-    public PropertyInfo(String name, Class<?> type) {
+    public DatabaseField(String name, Class<?> type) {
         this.name = name;
         this.type = type;
     }
 
-    public static PropertyInfo valueOf(String parent, PropertyInfo propertyInfo) {
-        return new PropertyInfo(parent + "." + propertyInfo.name, propertyInfo.type);
+    public static DatabaseField valueOf(String parent, DatabaseField databaseField) {
+        return new DatabaseField(parent + "." + databaseField.getName(), databaseField.getType());
     }
 
     public String getName() {
@@ -23,7 +23,7 @@ public class PropertyInfo {
 
     @Override
     public String toString() {
-        return "PropertyInfo{" +
+        return "DatabaseField{" +
                 "name='" + name + '\'' +
                 ", type=" + type +
                 '}';
@@ -32,11 +32,11 @@ public class PropertyInfo {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof PropertyInfo)) return false;
+        if (!(o instanceof DatabaseField)) return false;
 
-        PropertyInfo propertyInfo = (PropertyInfo) o;
+        DatabaseField databaseField = (DatabaseField) o;
 
-        return name.equals(propertyInfo.name) && type.equals(propertyInfo.type);
+        return name.equals(databaseField.name) && type.equals(databaseField.type);
     }
 
     @Override

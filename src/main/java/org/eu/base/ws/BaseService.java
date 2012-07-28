@@ -114,17 +114,17 @@ public class BaseService<T> {
         }
     }
 
-    public T get(ServletContext context, UriInfo uriInfo) throws ParseException {
-        EntityManagerFactory emf = (EntityManagerFactory) context.getAttribute("emf");
-        EntityManager em = emf.createEntityManager();
-        try {
-            return QueryBuilder.getInstance(type).buildQuery(em, uriInfo.getQueryParameters()).getSingleResult();
-        } finally {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
-            em.close();
-        }
-    }
+//    public T get(ServletContext context, UriInfo uriInfo) throws ParseException {
+//        EntityManagerFactory emf = (EntityManagerFactory) context.getAttribute("emf");
+//        EntityManager em = emf.createEntityManager();
+//        try {
+//            return QueryBuilder.getInstance(type).buildQuery(em, uriInfo.getQueryParameters()).getSingleResult();
+//        } finally {
+//            if (em.getTransaction().isActive())
+//                em.getTransaction().rollback();
+//            em.close();
+//        }
+//    }
 
     public void update(ServletContext context, T obj) {
         EntityManagerFactory emf = (EntityManagerFactory) context.getAttribute("emf");

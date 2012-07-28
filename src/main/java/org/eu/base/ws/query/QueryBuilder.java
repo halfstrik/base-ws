@@ -24,7 +24,7 @@ public class QueryBuilder<T> {
     private static Map<Class<?>, Object> instances = new HashMap<Class<?>, Object>();
     private final Class<T> type;
     // Idea: Change to Map<String, Path> - seems it's not necessary.
-    private Map<String, PropertyInfo> jaxbFieldsByAliases = new HashMap<String, PropertyInfo>();
+    private Map<String, DatabaseField> jaxbFieldsByAliases = new HashMap<String, DatabaseField>();
 
 
     protected QueryBuilder(Class<T> type) {
@@ -49,13 +49,13 @@ public class QueryBuilder<T> {
             if (f.getAnnotation(XmlAttribute.class) != null && f.getAnnotation(Column.class) != null) {
                 XmlAttribute attribute = f.getAnnotation(XmlAttribute.class);
                 String xmlName = attribute.name().isEmpty() || attribute.name().equals("##default") ? f.getName() : attribute.name();
-                jaxbFieldsByAliases.put(xmlName, new PropertyInfo(f.getName(), f.getType()));
+                jaxbFieldsByAliases.put(xmlName, new DatabaseField(f.getName(), f.getType()));
             }
             if (f.getAnnotation(XmlElement.class) != null && f.getAnnotation(Transient.class) == null) {
                 XmlElement element = f.getAnnotation(XmlElement.class);
                 String xmlName = element.name().isEmpty() || element.name().equals("##default") ? f.getName() : element.name();
-                for (Map.Entry<String, PropertyInfo> inner : QueryBuilder.getInstance(f.getType()).getJaxbFieldsByAliases().entrySet()) {
-                    jaxbFieldsByAliases.put(xmlName + '.' + inner.getKey(), PropertyInfo.valueOf(f.getName(), inner.getValue()));
+                for (Map.Entry<String, DatabaseField> inner : QueryBuilder.getInstance(f.getType()).getJaxbFieldsByAliases().entrySet()) {
+                    jaxbFieldsByAliases.put(xmlName + '.' + inner.getKey(), DatabaseField.valueOf(f.getName(), inner.getValue()));
                 }
             }
         }
@@ -64,50 +64,49 @@ public class QueryBuilder<T> {
                 XmlAttribute attribute = m.getAnnotation(XmlAttribute.class);
                 String dbName = BeanUtils.getPropertyNameByMethodName(m.getName());
                 String xmlName = attribute.name().isEmpty() || attribute.name().equals("##default") ? dbName : attribute.name();
-                jaxbFieldsByAliases.put(xmlName, new PropertyInfo(dbName, m.getReturnType()));
+                jaxbFieldsByAliases.put(xmlName, new DatabaseField(dbName, m.getReturnType()));
             }
             if (m.getAnnotation(XmlElement.class) != null && m.getAnnotation(Transient.class) == null) {
                 XmlElement element = m.getAnnotation(XmlElement.class);
                 String dbName = BeanUtils.getPropertyNameByMethodName(m.getName());
                 String xmlName = element.name().isEmpty() || element.name().equals("##default") ? dbName : element.name();
-                jaxbFieldsByAliases.put(xmlName, new PropertyInfo(dbName, m.getReturnType()));
-                for (Map.Entry<String, PropertyInfo> inner : QueryBuilder.getInstance(m.getReturnType()).getJaxbFieldsByAliases().entrySet()) {
-                    jaxbFieldsByAliases.put(xmlName + '.' + inner.getKey(), PropertyInfo.valueOf(dbName, inner.getValue()));
+                jaxbFieldsByAliases.put(xmlName, new DatabaseField(dbName, m.getReturnType()));
+                for (Map.Entry<String, DatabaseField> inner : QueryBuilder.getInstance(m.getReturnType()).getJaxbFieldsByAliases().entrySet()) {
+                    jaxbFieldsByAliases.put(xmlName + '.' + inner.getKey(), DatabaseField.valueOf(dbName, inner.getValue()));
                 }
             }
             if (m.getAnnotation(XmlOverride.class) != null && m.getAnnotation(XmlTransient.class) != null) {
-                log.info("f XmlOverride :P ");
                 XmlOverride override = m.getAnnotation(XmlOverride.class);
                 String dbName = BeanUtils.getPropertyNameByMethodName(m.getName());
                 String xmlName = override.name().isEmpty() ? dbName : override.name();
-                jaxbFieldsByAliases.put(xmlName, new PropertyInfo(dbName, m.getReturnType()));
-                for (Map.Entry<String, PropertyInfo> inner : QueryBuilder.getInstance(m.getReturnType()).getJaxbFieldsByAliases().entrySet()) {
-                    jaxbFieldsByAliases.put(xmlName + '.' + inner.getKey(), PropertyInfo.valueOf(dbName, inner.getValue()));
+                jaxbFieldsByAliases.put(xmlName, new DatabaseField(dbName, m.getReturnType()));
+                for (Map.Entry<String, DatabaseField> inner : QueryBuilder.getInstance(m.getReturnType()).getJaxbFieldsByAliases().entrySet()) {
+                    jaxbFieldsByAliases.put(xmlName + '.' + inner.getKey(), DatabaseField.valueOf(dbName, inner.getValue()));
                 }
             }
         }
         log.info("jaxb annotated methods & fields list {} for {}", jaxbFieldsByAliases, type);
     }
 
-    protected List<ParameterInfo> getParameterList(MultivaluedMap<String, String> params) {
-        List<ParameterInfo> list = getParameterRawList(params);
+    protected List<FilterParameter> getParameterList(MultivaluedMap<String, String> params) {
+        List<FilterParameter> list = getParameterRawList(params);
         return getParameterExistingList(list);
     }
 
-    protected List<ParameterInfo> getParameterRawList(MultivaluedMap<String, String> params) {
-        List<ParameterInfo> list = new ArrayList<ParameterInfo>();
+    protected List<FilterParameter> getParameterRawList(MultivaluedMap<String, String> params) {
+        List<FilterParameter> list = new ArrayList<FilterParameter>();
         for (Map.Entry<String, List<String>> entry : params.entrySet()) {
             for (String value : entry.getValue()) {
-                if (ParameterInfo.isParameter(entry.getKey())) {
-                    list.add(ParameterInfo.valueOf(entry.getKey(), value));
+                if (FilterParameter.isParameter(entry.getKey(), value)) {
+                    list.add(FilterParameter.valueOf(entry.getKey(), value));
                 }
             }
         }
         return list;
     }
 
-    protected List<ParameterInfo> getParameterExistingList(List<ParameterInfo> params) {
-        for (ParameterInfo param : new ArrayList<ParameterInfo>(params)) {
+    protected List<FilterParameter> getParameterExistingList(List<FilterParameter> params) {
+        for (FilterParameter param : new ArrayList<FilterParameter>(params)) {
             if (!jaxbFieldsByAliases.containsKey(param.getName())) {
                 log.debug("jaxb annotated property {} not found on class {}", param.getName(), type);
                 params.remove(param);
@@ -116,11 +115,11 @@ public class QueryBuilder<T> {
         return params;
     }
 
-    protected Map<String, PropertyInfo> getJaxbFieldsByAliases() {
+    protected Map<String, DatabaseField> getJaxbFieldsByAliases() {
         return Collections.unmodifiableMap(jaxbFieldsByAliases);
     }
 
-    private Predicate getPredicate(CriteriaBuilder cb, Root<T> root, ParameterInfo param) throws ParseException {
+    private Predicate getPredicate(CriteriaBuilder cb, Root<T> root, FilterParameter param) throws ParseException {
         return getPredicate(cb, root, param.getName(), param.getOperation(), param.getValue());
     }
 
@@ -138,7 +137,7 @@ public class QueryBuilder<T> {
 
     @SuppressWarnings("unchecked")
     protected Predicate getPredicate(CriteriaBuilder cb, Root<T> root, String name,
-                                     ParameterInfo.Operation operation, String value) throws ParseException {
+                                     FilterParameter.Operation operation, String value) throws ParseException {
         Path<T> path = getPath(root, jaxbFieldsByAliases.get(name).getName());
         NumberFormat format = NumberFormat.getInstance(Locale.US);
         switch (operation) {
@@ -161,9 +160,9 @@ public class QueryBuilder<T> {
         }
     }
 
-    protected Map<String, List<Predicate>> getPredicateByNameMap(CriteriaBuilder cb, Root<T> root, List<ParameterInfo> params) throws ParseException {
+    protected Map<String, List<Predicate>> getPredicateByNameMap(CriteriaBuilder cb, Root<T> root, List<FilterParameter> params) throws ParseException {
         Map<String, List<Predicate>> result = new HashMap<String, List<Predicate>>();
-        for (ParameterInfo param : params) {
+        for (FilterParameter param : params) {
             if (!result.containsKey(param.getName())) {
                 result.put(param.getName(), new ArrayList<Predicate>());
             }
@@ -188,23 +187,23 @@ public class QueryBuilder<T> {
         }
     }
 
-    protected List<ExpressionInfo> getExpressionInfoList(MultivaluedMap<String, String> params) {
-        List<ExpressionInfo> list = getExpressionInfoRawList(params);
+    protected List<AggregationParameter> getExpressionInfoList(MultivaluedMap<String, String> params) {
+        List<AggregationParameter> list = getExpressionInfoRawList(params);
         return getExpressionInfoExistingList(list);
     }
 
-    protected List<ExpressionInfo> getExpressionInfoRawList(MultivaluedMap<String, String> params) {
-        List<ExpressionInfo> list = new ArrayList<ExpressionInfo>();
+    protected List<AggregationParameter> getExpressionInfoRawList(MultivaluedMap<String, String> params) {
+        List<AggregationParameter> list = new ArrayList<AggregationParameter>();
         for (String entry : params.keySet()) {
-            if (ExpressionInfo.isExpression(entry)) {
-                list.add(ExpressionInfo.valueOf(entry));
+            if (AggregationParameter.isParameter(entry)) {
+                list.add(AggregationParameter.valueOf(entry));
             }
         }
         return list;
     }
 
-    protected List<ExpressionInfo> getExpressionInfoExistingList(List<ExpressionInfo> expressions) {
-        for (ExpressionInfo expr : new ArrayList<ExpressionInfo>(expressions)) {
+    protected List<AggregationParameter> getExpressionInfoExistingList(List<AggregationParameter> expressions) {
+        for (AggregationParameter expr : new ArrayList<AggregationParameter>(expressions)) {
             if (!jaxbFieldsByAliases.containsKey(expr.getName())) {
                 log.debug("jaxb annotated property {} not found on class {}", expr.getName(), type);
                 expressions.remove(expr);
@@ -213,13 +212,13 @@ public class QueryBuilder<T> {
         return expressions;
     }
 
-    protected Expression<? extends Number> getExpression(CriteriaBuilder cb, Root<T> root, ExpressionInfo expressionInfo) {
-        return getExpression(cb, root, expressionInfo.getName(), expressionInfo.getOperation());
+    protected Expression<? extends Number> getExpression(CriteriaBuilder cb, Root<T> root, AggregationParameter aggregationParameter) {
+        return getExpression(cb, root, aggregationParameter.getName(), aggregationParameter.getOperation());
     }
 
     // It is possible to provide a necessary type as a parameter. Now we hardcoded Double type - it's work at least for Integer and Double.
     protected Expression<? extends Number> getExpression(CriteriaBuilder cb, Root<T> root, String name,
-                                                         ExpressionInfo.Operation operation) {
+                                                         AggregationParameter.Operation operation) {
         Path<T> path = getPath(root, jaxbFieldsByAliases.get(name).getName());
         switch (operation) {
             case MAX:
@@ -234,9 +233,9 @@ public class QueryBuilder<T> {
     }
 
 // Now we support only one aggregation expression per query - if need more - do like in this example:
-//    protected List<Expression> getExpressionList(CriteriaBuilder cb, Root<T> root, List<ExpressionInfo> expressions) {
+//    protected List<Expression> getExpressionList(CriteriaBuilder cb, Root<T> root, List<AggregationParameter> expressions) {
 //        List<Expression> list = new ArrayList<Expression>();
-//        for(ExpressionInfo ei : expressions){
+//        for(AggregationParameter ei : expressions){
 //            list.add(getExpression(cb,root,ei));
 //        }
 //        return list;
@@ -247,13 +246,13 @@ public class QueryBuilder<T> {
         CriteriaQuery<T> criteriaQuery = cb.createQuery(type);
         Root<T> root = criteriaQuery.from(type);
 
-//        List<ExpressionInfo> eiList = getExpressionInfoList(paramsStr);
+//        List<AggregationParameter> eiList = getExpressionInfoList(paramsStr);
 //        if (eiList.size() > 0) {
 //            Expression<? extends Number> e = getExpression(cb, root, eiList.get(0));
 //            criteriaQuery.select(e);
 //        }
 
-        List<ParameterInfo> params = getParameterList(paramsStr);
+        List<FilterParameter> params = getParameterList(paramsStr);
         Map<String, List<Predicate>> map = getPredicateByNameMap(cb, root, params);
         Predicate wherePredicate = getPredicateFromMap(cb, map);
         if (wherePredicate != null) {

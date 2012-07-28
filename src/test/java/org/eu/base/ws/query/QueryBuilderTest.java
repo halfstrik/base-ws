@@ -73,14 +73,14 @@ public class QueryBuilderTest {
     public void init() throws NoSuchFieldException {
         QueryBuilder<SimpleTable> queryBuilder = new QueryBuilder<SimpleTable>(SimpleTable.class);
         queryBuilder.initiate();
-        Map<String, PropertyInfo> actual = new HashMap<String, PropertyInfo>(queryBuilder.getJaxbFieldsByAliases());
+        Map<String, DatabaseField> actual = new HashMap<String, DatabaseField>(queryBuilder.getJaxbFieldsByAliases());
 
-        Map<String, PropertyInfo> expected = new HashMap<String, PropertyInfo>();
-        expected.put("id", new PropertyInfo("id", Long.class));
-        expected.put("fullname", new PropertyInfo("name", String.class));
-        expected.put("integer", new PropertyInfo("integer", Integer.class));
-        expected.put("decimal", new PropertyInfo("decimal", Double.class));
-        expected.put("simpleSubTable.name", new PropertyInfo("simpleSubTable.name", String.class));
+        Map<String, DatabaseField> expected = new HashMap<String, DatabaseField>();
+        expected.put("id", new DatabaseField("id", Long.class));
+        expected.put("fullname", new DatabaseField("name", String.class));
+        expected.put("integer", new DatabaseField("integer", Integer.class));
+        expected.put("decimal", new DatabaseField("decimal", Double.class));
+        expected.put("simpleSubTable.name", new DatabaseField("simpleSubTable.name", String.class));
 
         assertEquals(expected, actual);
     }
@@ -88,22 +88,22 @@ public class QueryBuilderTest {
     @Test
     public void parameterRawTest() {
         QueryBuilder<SimpleTable> queryBuilder = QueryBuilder.getInstance(SimpleTable.class);
-        List<ParameterInfo> actual = queryBuilder.getParameterRawList(inputQueryParams);
+        List<FilterParameter> actual = queryBuilder.getParameterRawList(inputQueryParams);
 
-        List<ParameterInfo> expected = new ArrayList<ParameterInfo>();
-        expected.add(new ParameterInfo("simpleSubTable.name", ParameterInfo.Operation.EQ, "subFirst"));
-        expected.add(new ParameterInfo("fullname", ParameterInfo.Operation.EQ, "First"));
+        List<FilterParameter> expected = new ArrayList<FilterParameter>();
+        expected.add(new FilterParameter("simpleSubTable.name", FilterParameter.Operation.EQ, "subFirst"));
+        expected.add(new FilterParameter("fullname", FilterParameter.Operation.EQ, "First"));
         assertEquals(expected, actual);
     }
 
     @Test
     public void parameterTest() {
         QueryBuilder<SimpleTable> queryBuilder = QueryBuilder.getInstance(SimpleTable.class);
-        List<ParameterInfo> actual = queryBuilder.getParameterList(inputQueryParams);
+        List<FilterParameter> actual = queryBuilder.getParameterList(inputQueryParams);
 
-        List<ParameterInfo> expected = new ArrayList<ParameterInfo>();
-        expected.add(new ParameterInfo("simpleSubTable.name", ParameterInfo.Operation.EQ, "subFirst"));
-        expected.add(new ParameterInfo("fullname", ParameterInfo.Operation.EQ, "First"));
+        List<FilterParameter> expected = new ArrayList<FilterParameter>();
+        expected.add(new FilterParameter("simpleSubTable.name", FilterParameter.Operation.EQ, "subFirst"));
+        expected.add(new FilterParameter("fullname", FilterParameter.Operation.EQ, "First"));
         assertEquals(expected, actual);
     }
 
@@ -113,7 +113,7 @@ public class QueryBuilderTest {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         Root<SimpleTable> root = cb.createQuery().from(SimpleTable.class);
         QueryBuilder<SimpleTable> queryBuilder = QueryBuilder.getInstance(SimpleTable.class);
-        Predicate actual = queryBuilder.getPredicate(cb, root, "simpleSubTable.name", ParameterInfo.Operation.EQ, "value");
+        Predicate actual = queryBuilder.getPredicate(cb, root, "simpleSubTable.name", FilterParameter.Operation.EQ, "value");
     }
 
     @Test
@@ -122,7 +122,7 @@ public class QueryBuilderTest {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         Root<SimpleTable> root = cb.createQuery().from(SimpleTable.class);
         QueryBuilder<SimpleTable> queryBuilder = QueryBuilder.getInstance(SimpleTable.class);
-        List<ParameterInfo> actual = queryBuilder.getParameterList(inputQueryParams);
+        List<FilterParameter> actual = queryBuilder.getParameterList(inputQueryParams);
         Map<String, List<Predicate>> actualMap = queryBuilder.getPredicateByNameMap(cb, root, actual);
         Predicate result = queryBuilder.getPredicateFromMap(cb, actualMap);
     }

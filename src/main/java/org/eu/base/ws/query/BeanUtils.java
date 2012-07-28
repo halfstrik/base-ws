@@ -1,6 +1,6 @@
 package org.eu.base.ws.query;
 
-public class BeanUtils {
+class BeanUtils {
     /**
      * Gets property name from getter name by cutting leading "get" or "is" and lowering the first letter of the rest
      *
